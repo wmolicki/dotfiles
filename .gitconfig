@@ -1,0 +1,8 @@
+[user]
+	email = wojtek.molicki@gmail.com
+	name = wmolicki
+
+[alias]
+	co = checkout
+	ci = commit
+	st = status
