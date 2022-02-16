@@ -10,5 +10,8 @@ brew install nmap
 brew install --cask wireshark
 brew install --cask stats
 brew install kubectl
-brew install k3d
+#brew install k3d
 brew install --cask lens
+
+brew tap homebrew/cask-fonts
+brew install --cask font-iosevka-nerd-font
