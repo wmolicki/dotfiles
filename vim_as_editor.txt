@@ -1,4 +1,4 @@
-You just fly
+You will just fly
 
 hjkl
 
@@ -33,4 +33,31 @@ s -> same but go into insert mode
 
 c -> like d but go into insert mode
 
+Lesson 4:
+
+gg - go to top
+G - go to bottom
+
+:LINE_NUMBER -> jump to specific line
+LINE_NUMBER G -> same (alternative)
+
+number+[j/k] -> jump relative up/down number lines
+
+{} -> jumping over paragraphs (consecutive blocks of text)
+
+ctrl+u -> go up
+ctrl+d -> go down
+
+di} -> delete in {} block
+d2i} -> delete in {} and next {}
+
+ci} -> delete and go to insert mode
+cip -> delete in paragraph, go to insert
+
+vi] -> highlight in []
+va] -> highlight both [] and contents
+
+Lesson 5:
+
+:e <TAB> will open the edit list, use CTRL+N/CTRL+P to navigate through the autocomplete
 

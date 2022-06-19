@@ -28,6 +28,7 @@ set cmdheight=2
 set updatetime=50
 
 call plug#begin('~/.vim/plugged')
+Plug '907th/vim-auto-save'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'gruvbox-community/gruvbox'
@@ -80,3 +81,4 @@ au filetype go nmap <Leader>ds <Plug>(go-def-split)
 au filetype go nmap <Leader>dv <Plug>(go-def-vertical)
 
 let g:go_doc_popup_window=1
+let g:auto_save = 1
