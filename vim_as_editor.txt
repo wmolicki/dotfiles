@@ -61,3 +61,5 @@ Lesson 5:
 
 :e <TAB> will open the edit list, use CTRL+N/CTRL+P to navigate through the autocomplete
 
+. -> repeat last normal mode action
+@: -> repeat last command mode action
