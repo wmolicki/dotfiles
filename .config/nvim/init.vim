@@ -28,6 +28,8 @@ set cmdheight=2
 set updatetime=50
 
 call plug#begin('~/.vim/plugged')
+Plug 'preservim/nerdtree'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug '907th/vim-auto-save'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
@@ -44,6 +46,11 @@ highlight Normal guibg=none
 
 let mapleader = " "
 nnoremap <leader>ps :lua require('telescope.builtin').grep_string({ search = vim.fn.input("Grep For > ")})<CR>
+nnoremap <silent> <C-p> :FZF<CR>
+nnoremap <leader>n :NERDTreeFocus<CR>
+nnoremap <C-n> :NERDTree<CR>
+nnoremap <C-t> :NERDTreeToggle<CR>
+nnoremap <C-f> :NERDTreeFind<CR>
 
 lua <<END
 require('lualine').setup()
@@ -60,6 +67,8 @@ let g:go_highlight_operators = 1
 
 let g:go_fmt_autosave = 1
 let g:go_fmt_command = "goimports"
+
+" let g:fzf_layout = { 'down': '40%' }
 
 let g:go_auto_type_info = 1
 
@@ -82,3 +91,8 @@ au filetype go nmap <Leader>dv <Plug>(go-def-vertical)
 
 let g:go_doc_popup_window=1
 let g:auto_save = 1
+
+" close vim when nerdtree is last window
+autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+
+

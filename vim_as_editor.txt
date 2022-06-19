@@ -54,7 +54,7 @@ d2i} -> delete in {} and next {}
 ci} -> delete and go to insert mode
 cip -> delete in paragraph, go to insert
 
-vi] -> highlight in []
+vi] -> highlight in [
 va] -> highlight both [] and contents
 
 Lesson 5:
@@ -63,3 +63,40 @@ Lesson 5:
 
 . -> repeat last normal mode action
 @: -> repeat last command mode action
+
+CTRL+P: turns on FZF
+LEADER+PS: turns on telescope
+    
+CTRL+^: jump to last edited file
+
+CTRL+o: jump to previous place
+CTRL+i: jump to next place
+
+MARKS:
+
+local: work within the file
+
+m LETTER -> set the mark
+' LETTER -> goes to the mark
+
+global: work anywhere
+m CAPITAL LETTER
+' CAPITAL LETTER -> goes to global mark
+
+:Ex -> open file browser
+
+SPLITS:
+
+CTRL+w o -> close all but current buffer
+CTRL+w (window operations)
+    v -> vertical split
+    s -> horiSontal split
+
+:resize NUMBER (rows)
+:vertical resize (columns)
+
+CTRL+w = -> reset size to v
+
+CTRL+w + hjkl -> move focus
+
+CTRL+w h -> go from vertical to horisontal
