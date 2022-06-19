@@ -1,0 +1,36 @@
+You just fly
+
+hjkl
+
+Lesson 2:
+
+o -> insert mode below current line
+O -> same but above
+
+a -> move over 1 char and go in insert mode
+shift+i -> go to first char of the line and insert
+shift+a -> go to end of line and insert
+
+/ -> search
+n -> next result of search
+shift+n -> previous result
+
+* -> jump to next occurence of the thing the cursor is on
+# -> same but backwards
+
+(n/shift-n to repeat */#)
+
+Lesson 3:
+
+f -> jumps TO the character
+t -> jumps up to the character, but not on top of it
+
+; -> jump through the results
+, -> jumps backwards
+
+x -> delete single character
+s -> same but go into insert mode
+
+c -> like d but go into insert mode
+
+
