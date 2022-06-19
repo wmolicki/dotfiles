@@ -1,0 +1,8 @@
+import:
+  - /home/wmolicki/configs/dracula.yml
+font:
+    normal:
+        family: Iosevka Term 
+        style: Regular
+
+    size: 12
