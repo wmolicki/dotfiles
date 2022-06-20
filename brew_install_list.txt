@@ -18,3 +18,4 @@ brew install --cask font-iosevka-nerd-font
 
 brew install ripgrep
 brew install the_silver_searcher
+brew install bat

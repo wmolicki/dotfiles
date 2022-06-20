@@ -41,7 +41,7 @@ Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 call plug#end()
 
 let g:dracula_italic = 0
-colorscheme dracula
+colorscheme gruvbox
 highlight Normal guibg=none
 
 let mapleader = " "
