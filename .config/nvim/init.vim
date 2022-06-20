@@ -28,19 +28,33 @@ set cmdheight=2
 set updatetime=50
 
 call plug#begin('~/.vim/plugged')
+" comment files -> gc to comment in visual
+Plug 'tpope/vim-commentary'
+
+" adds 'edited' mark for commited files
+Plug 'airblade/vim-gitgutter'
+
 Plug 'preservim/nerdtree'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug '907th/vim-auto-save'
+
+" telescope stuff
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
+
+" themes
 Plug 'gruvbox-community/gruvbox'
 Plug 'dracula/vim', { 'as': 'dracula' }
-Plug 'nvim-lualine/lualine.nvim'
 Plug 'kyazdani42/nvim-web-devicons'
+
+" status line
+Plug 'nvim-lualine/lualine.nvim'
+
+" ide plugins
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 call plug#end()
 
-let g:dracula_italic = 0
+" let g:dracula_italic = 0
+"  colorscheme dracula
 colorscheme gruvbox
 highlight Normal guibg=none
 

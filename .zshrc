@@ -129,4 +129,8 @@ command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 
+# manages ssh keys
+eval $(keychain --eval --agents ssh --quick --quiet)
+
 export FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'
+
