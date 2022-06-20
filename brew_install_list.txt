@@ -15,3 +15,6 @@ brew install --cask lens
 
 brew tap homebrew/cask-fonts
 brew install --cask font-iosevka-nerd-font
+
+brew install ripgrep
+brew install the_silver_searcher
