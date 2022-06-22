@@ -51,6 +51,8 @@ exec --no-startup-id "feh --bg-scale /home/$USER/Downloads/wp8983172-4k-mountain
 
 exec --no-startup-id "imwheel -b '4 5'"
 
+exec --no-startup-id "xset r rate 200 25"
+
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
