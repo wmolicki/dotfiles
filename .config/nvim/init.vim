@@ -15,7 +15,8 @@ set noerrorbells
 set tabstop=4 softtabstop=4
 set shiftwidth=4
 set expandtab
-set smartindent
+set autoindent
+filetype plugin indent on
 
 set nowrap
 set noswapfile
@@ -45,9 +46,12 @@ Plug 'neovim/nvim-lspconfig'
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/nvim-cmp'
+Plug 'hrsh7th/cmp-path'
+Plug 'L3MON4D3/LuaSnip'
+Plug 'saadparwaiz1/cmd_luasnip'
 " Plug 'tzachar/cmp-tabnine', { 'do': './install.sh' }
-Plug 'onsails/lspkind-nvim'
-Plug 'nvim-lua/lsp_extensions.nvim'
+" Plug 'onsails/lspkind-nvim'
+" Plug 'nvim-lua/lsp_extensions.nvim'
 
 " change surrounding \" to ': cs"'
 Plug 'tpope/vim-surround'
@@ -56,6 +60,7 @@ Plug 'tpope/vim-commentary'
 
 " adds 'edited' mark for commited files
 Plug 'airblade/vim-gitgutter'
+
 " git integration
 Plug 'tpope/vim-fugitive'
 
@@ -70,6 +75,7 @@ Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 
 " themes
+Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
 Plug 'gruvbox-community/gruvbox'
 Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'kyazdani42/nvim-web-devicons'
@@ -88,12 +94,15 @@ Plug 'leafOfTree/vim-svelte-plugin'
 " misc
 Plug 'Raimondi/delimitMate'
 Plug 'Yggdroot/indentLine'
-Plug 'dracula/vim', { 'as': 'dracula' }
 call plug#end()
 
 let g:dracula_italic = 0
-colorscheme dracula
+lua <<END
+vim.cmd[[colorscheme tokyonight]]
+END
+" colorscheme dracula
 " colorscheme gruvbox
+
 highlight Normal guibg=none
 
 let mapleader = " "
@@ -103,20 +112,11 @@ nnoremap <silent> <C-p> :FZF<CR>
 lua <<END
 require('lualine').setup()
 
--- LSP CONFIG
-require("lspconfig").gopls.setup{
-  cmd = { "gopls", "serve" },
-	settings = {
-		gopls = {
-			analyses = {
-				unusedparams = true,
-			},
-			staticcheck = true,
-		},
-	},
-}
-
+-- autocomplete
 local cmp = require("cmp")
+
+vim.opt.completeopt = {"menu", "menuone", "noselect"}
+
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
 
@@ -127,17 +127,18 @@ cmp.setup({
       end,
   },
   mapping = cmp.mapping.preset.insert({
-    ['<C-y>'] = cmp.mapping.confirm({ select = true }),
-	["<C-u>"] = cmp.mapping.scroll_docs(-4),
-	["<C-d>"] = cmp.mapping.scroll_docs(4),
+    ["<C-y>"] = cmp.mapping.confirm({ select = true }),
+	["<C-p>"] = cmp.mapping.scroll_docs(-4),
+	["<C-n>"] = cmp.mapping.scroll_docs(4),
 	["<C-Space>"] = cmp.mapping.complete(),
   }),
   sources = {
-      { name = 'nvim_lsp' },
+      { name = "nvim_lsp" },
       { name = "luasnip" },
       { name = "buffer" },
   },
 })
+
 -- treesitter
 require'nvim-treesitter.configs'.setup{
   ensure_installed = { "go", "python" },
@@ -165,6 +166,8 @@ let g:go_fmt_command = "goimports"
 let g:go_auto_type_info = 1
 
 
+
+" wtf is that
 let g:NetrwIsOpen=0
 
 function! ToggleNetrw()
@@ -182,17 +185,19 @@ function! ToggleNetrw()
         silent Lexplore
     endif
 endfunction
+" wtf end
 
-autocmd FileType go nmap <leader>b :<C-u>call <SID>build_go_files()<CR>
-autocmd FileType go nmap <leader>r  <Plug>(go-run)
-autocmd FileType go nmap <leader>t  <Plug>(go-test)
+" autocmd FileType go nmap <leader>b :<C-u>call <SID>build_go_files()<CR>
+" autocmd FileType go nmap <leader>r  <Plug>(go-run)
+" autocmd FileType go nmap <leader>t  <Plug>(go-test)
 
-au filetype go inoremap <buffer> . .<C-x><C-o>
-au filetype go nmap <Leader>ds <Plug>(go-def-split)
-au filetype go nmap <Leader>dv <Plug>(go-def-vertical)
+" au filetype go inoremap <buffer> . .<C-x><C-o>
+" au filetype go nmap <Leader>ds <Plug>(go-def-split)
+" au filetype go nmap <Leader>dv <Plug>(go-def-vertical)
 
 " let g:go_doc_popup_window=0
 let g:go_doc_keywordprg_enabled = 0
+let g:go_def_mapping_enabled = 0
 let g:auto_save = 1
 
 nnoremap <silent> <expr> <C-p> g:NERDTree.IsOpen() ? "\:NERDTreeClose<CR>" : bufexists(expand('%')) ? "\:NERDTreeFind<CR>" : "\:NERDTree<CR>"
@@ -214,5 +219,41 @@ nnoremap <silent> <F3> :NERDTreeToggle<CR>
 
 nnoremap <leader>n :lua vim.lsp.diagnostic.goto_next()<cr>
 nnoremap <leader>p :lua vim.lsp.diagnostic.goto_prev()<cr>
-nnoremap <leader>g :lua vim.lsp.buf.definition()<CR>
-nnoremap K :lua vim.lsp.buf.hover()<CR>
+nnoremap <leader>gi :GoImports<CR>
+
+noremap <Up> <Nop>
+noremap <Down> <Nop>
+noremap <Left> <Nop>
+noremap <Right> <Nop>
+
+lua <<END
+local on_attach = function(client, buffnum)
+    vim.keymap.set("n", "K", vim.lsp.buf.hover, {buffer=0})
+    vim.keymap.set("n", "gd", vim.lsp.buf.definition, {buffer=0})
+    vim.keymap.set("n", "gT", vim.lsp.buf.type_definition, {buffer=0})
+    vim.keymap.set("n", "gi ", vim.lsp.buf.implementation, {buffer=0})
+    vim.keymap.set("n", "<leader>n", vim.diagnostic.goto_next, {buffer=0})
+    vim.keymap.set("n", "<leader>p", vim.diagnostic.goto_prev, {buffer=0})
+    vim.keymap.set("n", "<leader>l", "<cmd>Telescope diagnostics<cr>", {buffer=0})
+    vim.keymap.set("n", "<leader>r", vim.lsp.buf.rename, {buffer=0})
+    vim.keymap.set("n", "<leader>a", vim.lsp.buf.code_action, {buffer=0})
+    vim.keymap.set("n", "<leader>R", vim.lsp.buf.references, {buffer=0})
+end
+
+-- LSP CONFIG
+-- need to setup on_attach for every lsp config
+require'lspconfig'.gopls.setup{
+    on_attach = on_attach,
+    cmd = { 'gopls', 'serve' },
+	settings = {
+		gopls = {
+			analyses = {
+				unusedparams = true,
+			},
+			staticcheck = true,
+		},
+	},
+
+}
+
+END
