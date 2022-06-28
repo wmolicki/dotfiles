@@ -36,6 +36,20 @@ set updatetime=50
 set autochdir
 
 call plug#begin('~/.vim/plugged')
+" test runner
+Plug 'antoinemadec/FixCursorHold.nvim'
+Plug 'nvim-neotest/neotest'
+Plug 'nvim-neotest/neotest-plenary'
+Plug 'nvim-neotest/neotest-go'
+Plug 'nvim-neotest/neotest-python'
+
+" dap (debugger)
+Plug 'mfussenegger/nvim-dap'
+Plug 'leoluz/nvim-dap-go'
+Plug 'rcarriga/nvim-dap-ui'
+Plug 'theHamsta/nvim-dap-virtual-text'
+Plug 'nvim-telescope/telescope-dap.nvim'
+
 " treesitter
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'nvim-treesitter/playground'
@@ -48,7 +62,6 @@ Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-path'
 Plug 'L3MON4D3/LuaSnip'
-Plug 'saadparwaiz1/cmd_luasnip'
 " Plug 'tzachar/cmp-tabnine', { 'do': './install.sh' }
 " Plug 'onsails/lspkind-nvim'
 " Plug 'nvim-lua/lsp_extensions.nvim'
@@ -73,6 +86,7 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 " telescope stuff
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
+Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
 
 " themes
 Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
@@ -86,10 +100,13 @@ Plug 'nvim-lualine/lualine.nvim'
 " go
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 " python
-Plug 'davidhalter/jedi-vim'
+" Plug 'davidhalter/jedi-vim'
 Plug 'raimon49/requirements.txt.vim', {'for': 'requirements'}
 " svelte
 Plug 'leafOfTree/vim-svelte-plugin'
+
+" prettier autoformat
+Plug 'sbdchd/neoformat'
 
 " misc
 Plug 'Raimondi/delimitMate'
@@ -110,6 +127,8 @@ nnoremap <leader>ps :lua require('telescope.builtin').grep_string({ search = vim
 nnoremap <silent> <C-p> :FZF<CR>
 
 lua <<END
+require('telescope').load_extension('fzf')
+
 require('lualine').setup()
 
 -- autocomplete
@@ -166,7 +185,6 @@ let g:go_fmt_command = "goimports"
 let g:go_auto_type_info = 1
 
 
-
 " wtf is that
 let g:NetrwIsOpen=0
 
@@ -191,6 +209,11 @@ endfunction
 " autocmd FileType go nmap <leader>r  <Plug>(go-run)
 " autocmd FileType go nmap <leader>t  <Plug>(go-test)
 
+augroup prettier_mapping
+    autocmd!
+    autocmd BufWritePre *.js,*.jsx,*.ts,*.tsx Neoformat 
+augroup end
+
 " au filetype go inoremap <buffer> . .<C-x><C-o>
 " au filetype go nmap <Leader>ds <Plug>(go-def-split)
 " au filetype go nmap <Leader>dv <Plug>(go-def-vertical)
@@ -199,8 +222,6 @@ endfunction
 let g:go_doc_keywordprg_enabled = 0
 let g:go_def_mapping_enabled = 0
 let g:auto_save = 1
-
-nnoremap <silent> <expr> <C-p> g:NERDTree.IsOpen() ? "\:NERDTreeClose<CR>" : bufexists(expand('%')) ? "\:NERDTreeFind<CR>" : "\:NERDTree<CR>"
 
 " close vim when nerdtree is last window
 autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
@@ -214,8 +235,8 @@ let g:nerdtree_tabs_focus_on_files=1
 let g:NERDTreeMapOpenInTabSilent = '<RightMouse>'
 let g:NERDTreeWinSize = 50
 set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*.db,*.sqlite,*node_modules/
-nnoremap <silent> <F2> :NERDTreeFind<CR>
-nnoremap <silent> <F3> :NERDTreeToggle<CR>
+nnoremap <silent> <F10> :NERDTreeFind<CR>
+nnoremap <silent> <F11> :NERDTreeToggle<CR>
 
 nnoremap <leader>n :lua vim.lsp.diagnostic.goto_next()<cr>
 nnoremap <leader>p :lua vim.lsp.diagnostic.goto_prev()<cr>
@@ -227,6 +248,21 @@ noremap <Left> <Nop>
 noremap <Right> <Nop>
 
 lua <<END
+require("neotest").setup({
+    adapters = {
+        require("neotest-plenary"),
+        require("neotest-python")({
+            dap = { justMyCode = false },
+            runner = "pytest",
+        }),
+        require("neotest-go")({
+            experimental = {
+                test_table = true,
+            }
+        }),
+    }
+})
+
 local on_attach = function(client, buffnum)
     vim.keymap.set("n", "K", vim.lsp.buf.hover, {buffer=0})
     vim.keymap.set("n", "gd", vim.lsp.buf.definition, {buffer=0})
@@ -235,13 +271,21 @@ local on_attach = function(client, buffnum)
     vim.keymap.set("n", "<leader>n", vim.diagnostic.goto_next, {buffer=0})
     vim.keymap.set("n", "<leader>p", vim.diagnostic.goto_prev, {buffer=0})
     vim.keymap.set("n", "<leader>l", "<cmd>Telescope diagnostics<cr>", {buffer=0})
-    vim.keymap.set("n", "<leader>r", vim.lsp.buf.rename, {buffer=0})
-    vim.keymap.set("n", "<leader>a", vim.lsp.buf.code_action, {buffer=0})
-    vim.keymap.set("n", "<leader>R", vim.lsp.buf.references, {buffer=0})
+    vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, {buffer=0})
+    vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, {buffer=0})
+    vim.keymap.set("n", "gr", vim.lsp.buf.references, {buffer=0})
 end
 
 -- LSP CONFIG
 -- need to setup on_attach for every lsp config
+require'lspconfig'.tsserver.setup{
+    on_attach = on_attach
+}
+
+require'lspconfig'.pyright.setup{
+    on_attach = on_attach
+}
+
 require'lspconfig'.gopls.setup{
     on_attach = on_attach,
     cmd = { 'gopls', 'serve' },
@@ -255,5 +299,52 @@ require'lspconfig'.gopls.setup{
 	},
 
 }
+
+require('dap-go').setup()
+require('dapui').setup({
+    layouts = {
+        {
+            elements = {
+                { id = "scopes", size = 0.25 }, 
+                "breakpoints", 
+                "stacks",
+                "watches",
+            },
+            size = 40,
+            position = "left",
+        },
+        {
+            elements = {
+                "repl",
+            },
+            size = 0.25,
+            position = "bottom",
+        },
+    },
+})
+require('nvim-dap-virtual-text').setup()
+
+local dap, dapui = require("dap"), require("dapui")
+dap.listeners.after.event_initialized["dapui_config"] = function()
+    dapui.open()
+end
+dap.listeners.before.event_terminated["dapui_config"] = function()
+    dapui.close()
+end
+dap.listeners.before.event_exited["dapui_config"] = function()
+    dapui.close()
+end
+
+vim.keymap.set("n", "<F5>", ":lua require'dap'.continue()<CR>")
+vim.keymap.set("n", "<F2>", ":lua require'dap'.step_over()<CR>")
+vim.keymap.set("n", "<F1>", ":lua require'dap'.step_into()<CR>")
+vim.keymap.set("n", "<F3>", ":lua require'dap'.step_out()<CR>")
+vim.keymap.set("n", "<leader>b", ":lua require'dap'.toggle_breakpoint()<CR>")
+vim.keymap.set("n", "<leader>B", ":lua require'dap'.set_breakpoint(vim.fn.input('Breakpoint condition: '))<CR>")
+vim.keymap.set("n", "<leader>dl", ":lua require'dap'.set_breakpoint(nil, nil, vim.fn.input('Log point message: '))<CR>")
+vim.keymap.set("n", "<leader>dr", ":lua require'dap'.repl.open()<CR>")
+vim.keymap.set("n", "<leader>dt", ":lua require'dap-go'.debug_test()<CR>")
+
+
 
 END
