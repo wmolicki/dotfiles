@@ -4,6 +4,7 @@ set fileencodings=utf-8
 set ttyfast
 
 set backspace=indent,eol,start
+set background=dark
 
 set exrc
 set relativenumber
@@ -90,8 +91,6 @@ Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
 
 " themes
 Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
-Plug 'gruvbox-community/gruvbox'
-Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'kyazdani42/nvim-web-devicons'
     
 " status line
@@ -113,12 +112,9 @@ Plug 'Raimondi/delimitMate'
 Plug 'Yggdroot/indentLine'
 call plug#end()
 
-let g:dracula_italic = 0
 lua <<END
 vim.cmd[[colorscheme tokyonight]]
 END
-" colorscheme dracula
-" colorscheme gruvbox
 
 highlight Normal guibg=none
 
@@ -134,10 +130,10 @@ require('lualine').setup()
 -- autocomplete
 local cmp = require("cmp")
 
-vim.opt.completeopt = {"menu", "menuone", "noselect"}
-
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
+
+vim.opt.completeopt = {"menu", "menuone", "noselect"}
 
 cmp.setup({
   snippet = {
@@ -209,10 +205,16 @@ endfunction
 " autocmd FileType go nmap <leader>r  <Plug>(go-run)
 " autocmd FileType go nmap <leader>t  <Plug>(go-test)
 
-augroup prettier_mapping
-    autocmd!
-    autocmd BufWritePre *.js,*.jsx,*.ts,*.tsx Neoformat 
-augroup end
+" augroup prettier_mapping
+"     autocmd!
+"     autocmd BufWritePre *.js,*.jsx,*.ts,*.tsx Neoformat 
+" augroup end
+
+" this will create intermediate dir on save (no more annoying errors)
+augroup Mkdir
+  autocmd!
+  autocmd BufWritePre * call mkdir(expand("<afile>:p:h"), "p")
+augroup END
 
 " au filetype go inoremap <buffer> . .<C-x><C-o>
 " au filetype go nmap <Leader>ds <Plug>(go-def-split)
@@ -287,6 +289,7 @@ require'lspconfig'.pyright.setup{
 }
 
 require'lspconfig'.gopls.setup{
+    capabilities = capabilities,
     on_attach = on_attach,
     cmd = { 'gopls', 'serve' },
 	settings = {
