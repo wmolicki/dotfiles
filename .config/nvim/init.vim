@@ -13,6 +13,8 @@ set nohlsearch
 set hidden
 set noerrorbells
 
+set autoread
+
 set tabstop=4 softtabstop=4
 set shiftwidth=4
 set expandtab
@@ -34,7 +36,7 @@ set colorcolumn=80
 set cmdheight=2
 
 set updatetime=50
-set autochdir
+set noautochdir
 
 call plug#begin('~/.vim/plugged')
 Plug 'simrat39/symbols-outline.nvim'
@@ -69,6 +71,8 @@ Plug 'L3MON4D3/LuaSnip'
 " Plug 'onsails/lspkind-nvim'
 " Plug 'nvim-lua/lsp_extensions.nvim'
 
+" support for repeating plugins with .
+Plug 'tpope/vim-repeat'
 " change surrounding \" to ': cs"'
 Plug 'tpope/vim-surround'
 " comment files -> gc to comment in visual
@@ -85,6 +89,7 @@ Plug 'preservim/nerdtree'
 " Plug 'jistr/vim-nerdtree-tabs'
 
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
 
 " telescope stuff
 Plug 'nvim-lua/plenary.nvim'
@@ -130,12 +135,12 @@ require('telescope').load_extension('fzf')
 require('lualine').setup()
 
 -- autocomplete
+vim.opt.completeopt = {"menu", "menuone", "noselect"}
+
 local cmp = require("cmp")
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
-
-vim.opt.completeopt = {"menu", "menuone", "noselect"}
 
 cmp.setup({
   snippet = {
@@ -145,8 +150,8 @@ cmp.setup({
   },
   mapping = cmp.mapping.preset.insert({
     ["<C-y>"] = cmp.mapping.confirm({ select = true }),
-	["<C-p>"] = cmp.mapping.scroll_docs(-4),
-	["<C-n>"] = cmp.mapping.scroll_docs(4),
+	["<C-v>"] = cmp.mapping.scroll_docs(-4),
+	["<C-b>"] = cmp.mapping.scroll_docs(4),
 	["<C-Space>"] = cmp.mapping.complete(),
   }),
   sources = {
@@ -182,6 +187,8 @@ let g:go_fmt_command = "goimports"
 
 let g:go_auto_type_info = 1
 
+" without this vim conceals quotes
+let g:vim_json_conceal=0
 
 " wtf is that
 let g:NetrwIsOpen=0
@@ -271,7 +278,7 @@ local on_attach = function(client, buffnum)
     vim.keymap.set("n", "K", vim.lsp.buf.hover, {buffer=0})
     vim.keymap.set("n", "gd", vim.lsp.buf.definition, {buffer=0})
     vim.keymap.set("n", "gT", vim.lsp.buf.type_definition, {buffer=0})
-    vim.keymap.set("n", "gi ", vim.lsp.buf.implementation, {buffer=0})
+    vim.keymap.set("n", "gf ", vim.lsp.buf.implementation, {buffer=0})
     vim.keymap.set("n", "<leader>n", vim.diagnostic.goto_next, {buffer=0})
     vim.keymap.set("n", "<leader>p", vim.diagnostic.goto_prev, {buffer=0})
     vim.keymap.set("n", "<leader>l", "<cmd>Telescope diagnostics<cr>", {buffer=0})
@@ -353,3 +360,9 @@ vim.keymap.set("n", "<leader>dt", ":lua require'dap-go'.debug_test()<CR>")
 vim.keymap.set("n", "<leader>gs", ":SymbolsOutline<CR>")
 
 END
+
+" this arcane magic will reopen file with cursor in last position
+augroup vimrc-remember-cursor-position
+    autocmd!
+    autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
+augroup END
