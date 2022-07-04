@@ -37,6 +37,8 @@ set updatetime=50
 set autochdir
 
 call plug#begin('~/.vim/plugged')
+Plug 'simrat39/symbols-outline.nvim'
+
 " test runner
 Plug 'antoinemadec/FixCursorHold.nvim'
 Plug 'nvim-neotest/neotest'
@@ -348,6 +350,6 @@ vim.keymap.set("n", "<leader>dl", ":lua require'dap'.set_breakpoint(nil, nil, vi
 vim.keymap.set("n", "<leader>dr", ":lua require'dap'.repl.open()<CR>")
 vim.keymap.set("n", "<leader>dt", ":lua require'dap-go'.debug_test()<CR>")
 
-
+vim.keymap.set("n", "<leader>gs", ":SymbolsOutline<CR>")
 
 END
