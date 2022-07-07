@@ -39,6 +39,7 @@ set updatetime=50
 set noautochdir
 
 call plug#begin('~/.vim/plugged')
+Plug 'mbbill/undotree'
 Plug 'simrat39/symbols-outline.nvim'
 
 " test runner
@@ -250,7 +251,7 @@ nnoremap <silent> <F10> :NERDTreeFind<CR>
 nnoremap <silent> <F11> :NERDTreeToggle<CR>
 
 nnoremap <leader>n :lua vim.lsp.diagnostic.goto_next()<cr>
-nnoremap <leader>p :lua vim.lsp.diagnostic.goto_prev()<cr>
+" TODO: nnoremap <leader>p :lua vim.lsp.diagnostic.goto_prev()<cr>
 nnoremap <leader>gi :GoImports<CR>
 
 noremap <Up> <Nop>
@@ -359,7 +360,24 @@ vim.keymap.set("n", "<leader>dt", ":lua require'dap-go'.debug_test()<CR>")
 
 vim.keymap.set("n", "<leader>gs", ":SymbolsOutline<CR>")
 
+vim.keymap.set("n", "<leader>u", ":UndotreeToggle<CR>")
+
 END
+
+" primeagen's bestest remaps
+nnoremap Y yg$
+xnoremap <leader>p "_dP
+
+nnoremap <leader>y "+y
+vnoremap <leader>y "+y
+nmap <leader>Y "+Y
+
+nnoremap <leader>d "_d
+vnoremap <leader>d "_d
+
+" I dont think I need this atm
+inoremap <C-c> <esc>
+"end
 
 " this arcane magic will reopen file with cursor in last position
 augroup vimrc-remember-cursor-position
