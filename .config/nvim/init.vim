@@ -361,6 +361,7 @@ vim.keymap.set("n", "<leader>dt", ":lua require'dap-go'.debug_test()<CR>")
 vim.keymap.set("n", "<leader>gs", ":SymbolsOutline<CR>")
 
 vim.keymap.set("n", "<leader>u", ":UndotreeToggle<CR>")
+vim.keymap.set("n", "<leader>f", ":Telescope buffers<CR>")
 
 END
 
