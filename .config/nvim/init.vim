@@ -36,7 +36,7 @@ set colorcolumn=80
 set cmdheight=2
 
 set updatetime=50
-set noautochdir
+set autochdir
 
 call plug#begin('~/.vim/plugged')
 Plug 'mbbill/undotree'
