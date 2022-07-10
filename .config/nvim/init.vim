@@ -363,6 +363,11 @@ vim.keymap.set("n", "<leader>gs", ":SymbolsOutline<CR>")
 vim.keymap.set("n", "<leader>u", ":UndotreeToggle<CR>")
 vim.keymap.set("n", "<leader>f", ":Telescope buffers<CR>")
 
+vim.keymap.set("n", "<leader>rt", ":lua require'neotest'.run.run()<CR>")
+vim.keymap.set("n", "<leader>rf", ":lua require'neotest'.run.run(vim.fn.expand('%'))<CR>")
+
+
+
 END
 
 " primeagen's bestest remaps
