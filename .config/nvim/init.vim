@@ -67,6 +67,10 @@ Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-path'
+Plug 'hrsh7th/cmp-cmdline'
+
+
+Plug 'saadparwaiz1/cmp_luasnip'
 Plug 'L3MON4D3/LuaSnip'
 " Plug 'tzachar/cmp-tabnine', { 'do': './install.sh' }
 " Plug 'onsails/lspkind-nvim'
@@ -89,8 +93,8 @@ Plug 'tpope/vim-fugitive'
 Plug 'preservim/nerdtree'
 " Plug 'jistr/vim-nerdtree-tabs'
 
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
+" Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+" Plug 'junegunn/fzf.vim'
 
 " telescope stuff
 Plug 'nvim-lua/plenary.nvim'
@@ -128,9 +132,65 @@ highlight Normal guibg=none
 
 let mapleader = " "
 nnoremap <leader>ps :lua require('telescope.builtin').grep_string({ search = vim.fn.input("Grep For > ")})<CR>
-nnoremap <silent> <C-p> :FZF<CR>
+nnoremap <silent> <C-p> <cmd>lua require('telescope.builtin').find_files{ hidden = true }<CR>
 
 lua <<END
+local actions = require "telescope.actions"
+require('telescope').setup({
+  defaults = {
+    file_ignore_patterns = { "node_modules", "%.pyc", ".git", "venv" },
+    mappings = {
+      i = {
+        ["<C-n>"] = actions.cycle_history_next,
+        ["<C-p>"] = actions.cycle_history_prev,
+
+        ["<C-j>"] = actions.move_selection_next,
+        ["<C-k>"] = actions.move_selection_previous,
+
+        ["<C-c>"] = actions.close,
+
+        ["<C-u>"] = actions.preview_scrolling_up,
+        ["<C-d>"] = actions.preview_scrolling_down,
+
+        ["<PageUp>"] = actions.results_scrolling_up,
+        ["<PageDown>"] = actions.results_scrolling_down,
+
+        ["<Tab>"] = actions.toggle_selection + actions.move_selection_worse,
+        ["<S-Tab>"] = actions.toggle_selection + actions.move_selection_better,
+        ["<C-q>"] = actions.send_to_qflist + actions.open_qflist,
+        ["<M-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
+        ["<C-l>"] = actions.complete_tag,
+        ["<C-_>"] = actions.which_key, -- keys from pressing <C-/>
+        },
+      n = {
+        ["<esc>"] = actions.close,
+        ["<CR>"] = actions.select_default,
+        ["<C-x>"] = actions.select_horizontal,
+        ["<C-v>"] = actions.select_vertical,
+        ["<C-t>"] = actions.select_tab,
+
+        ["<Tab>"] = actions.toggle_selection + actions.move_selection_worse,
+        ["<S-Tab>"] = actions.toggle_selection + actions.move_selection_better,
+        ["<C-q>"] = actions.send_to_qflist + actions.open_qflist,
+        ["<M-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
+
+        ["j"] = actions.move_selection_next,
+        ["k"] = actions.move_selection_previous,
+
+        ["gg"] = actions.move_to_top,
+        ["G"] = actions.move_to_bottom,
+
+        ["<C-u>"] = actions.preview_scrolling_up,
+        ["<C-d>"] = actions.preview_scrolling_down,
+
+        ["<PageUp>"] = actions.results_scrolling_up,
+        ["<PageDown>"] = actions.results_scrolling_down,
+
+        ["?"] = actions.which_key,
+      },
+    },
+  }
+})
 require('telescope').load_extension('fzf')
 
 require('lualine').setup()
@@ -139,21 +199,28 @@ require('lualine').setup()
 vim.opt.completeopt = {"menu", "menuone", "noselect"}
 
 local cmp = require("cmp")
-
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
+local luasnip = require("luasnip")
 
 cmp.setup({
   snippet = {
       expand = function(args)
-        require("luasnip").lsp_expand(args.body)
+        luasnip.lsp_expand(args.body)
       end,
   },
   mapping = cmp.mapping.preset.insert({
-    ["<C-y>"] = cmp.mapping.confirm({ select = true }),
+    ["<CR>"] = cmp.mapping.confirm({ select = true }),
 	["<C-v>"] = cmp.mapping.scroll_docs(-4),
 	["<C-b>"] = cmp.mapping.scroll_docs(4),
 	["<C-Space>"] = cmp.mapping.complete(),
+    -- ["<Tab>"] = cmp.mapping(function(fallback)
+    --   if luasnip.expand_or_jumpable() then
+    --       luasnip.expand_or_jump()
+    --   elseif cmp.visible() then
+    --       cmp.confirm({ select = true })
+    --   else
+    --       fallback()
+    --   end
+    -- end, { "i", "s" }),
   }),
   sources = {
       { name = "nvim_lsp" },
@@ -161,6 +228,27 @@ cmp.setup({
       { name = "buffer" },
   },
 })
+
+-- Use buffer source for `/` (if you enabled `native_menu`, this won't work anymore).
+cmp.setup.cmdline('/', {
+  mapping = cmp.mapping.preset.cmdline(),
+  sources = {
+    { name = 'buffer' }
+  }
+})
+
+-- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
+cmp.setup.cmdline(':', {
+  mapping = cmp.mapping.preset.cmdline(),
+  sources = cmp.config.sources({
+    { name = 'path' }
+  }, {
+    { name = 'cmdline' }
+  })
+})
+
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
 
 -- treesitter
 require'nvim-treesitter.configs'.setup{
@@ -297,6 +385,8 @@ require'lspconfig'.tsserver.setup{
 require'lspconfig'.pyright.setup{
     on_attach = on_attach
 }
+
+require'lspconfig'.rust_analyzer.setup{}
 
 require'lspconfig'.gopls.setup{
     capabilities = capabilities,
