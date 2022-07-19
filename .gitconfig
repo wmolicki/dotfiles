@@ -12,3 +12,5 @@
 
 [diff]
     tool = nvim -d
+[core]
+	editor = nvim
