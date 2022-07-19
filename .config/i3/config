@@ -222,9 +222,8 @@ for_window [class="^Steam$" title="^Screenshot Uploader$"] floating enable
 for_window [class="^Steam$" title="^Steam Guard - Computer Authorization Required$"] floating enable
 for_window [title="^Steam Keyboard$"] floating enable
 
-set $i3_resurrect i3-resurrect
+# set $i3_resurrect i3-resurrect
 
-
-exec --no-startup-id $i3_resurrect restore -w 1
-exec --no-startup-id $i3_resurrect restore -w 2
-exec --no-startup-id $i3_resurrect restore -w 3 
+# exec --no-startup-id $i3_resurrect restore -w 1
+# exec --no-startup-id $i3_resurrect restore -w 2
+# exec --no-startup-id $i3_resurrect restore -w 3 
