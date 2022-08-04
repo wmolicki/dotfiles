@@ -227,3 +227,5 @@ for_window [title="^Steam Keyboard$"] floating enable
 # exec --no-startup-id $i3_resurrect restore -w 1
 # exec --no-startup-id $i3_resurrect restore -w 2
 # exec --no-startup-id $i3_resurrect restore -w 3 
+
+

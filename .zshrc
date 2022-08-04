@@ -83,6 +83,7 @@ plugins=(
 )
 
 source $ZSH/oh-my-zsh.sh
+source <(kubectl completion zsh)
 
 # User configuration
 
@@ -118,6 +119,8 @@ eval `dircolors /home/wmolicki/.dir_colors/dircolors`
 alias vi=nvim
 alias vim=nvim
 alias bat='/usr/bin/batcat'
+alias k=kubectl
+alias tf=terraform
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -131,6 +134,9 @@ eval "$(pyenv virtualenv-init -)"
 
 # manages ssh keys
 eval $(keychain --eval --agents ssh --quick --quiet)
+
+# direnv integration
+eval "$(direnv hook zsh)"
 
 export FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'
 
