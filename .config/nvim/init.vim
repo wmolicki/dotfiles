@@ -36,7 +36,7 @@ set colorcolumn=80
 set cmdheight=2
 
 set updatetime=50
-set autochdir
+set noautochdir
 
 call plug#begin('~/.vim/plugged')
 Plug 'mbbill/undotree'
@@ -110,6 +110,8 @@ Plug 'nvim-lualine/lualine.nvim'
 
 " go
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+Plug 'mattn/vim-goimports'
+
 " python
 " Plug 'davidhalter/jedi-vim'
 Plug 'raimon49/requirements.txt.vim', {'for': 'requirements'}
@@ -122,6 +124,11 @@ Plug 'sbdchd/neoformat'
 " misc
 Plug 'Raimondi/delimitMate'
 Plug 'Yggdroot/indentLine'
+
+" folding
+Plug 'kevinhwang91/promise-async'
+Plug 'kevinhwang91/nvim-ufo'
+
 call plug#end()
 
 lua <<END
@@ -258,23 +265,35 @@ require'nvim-treesitter.configs'.setup{
     enable = true,
   },
 }
+
+
+-- folding
+capabilities.textDocument.foldingRange = {
+    dynamicRegistration = false,
+    lineFoldingOnly = true
+}
+
+
 END
 
 filetype plugin indent on
 
 set autowrite
-let g:go_highlight_fields = 1
-let g:go_highlight_functions = 1
-let g:go_highlight_function_calls = 1
-let g:go_highlight_extra_types = 1
-let g:go_highlight_operators = 1
+let g:goimports = 1
+
+
+" let g:go_highlight_fields = 1
+" let g:go_highlight_functions = 1
+" let g:go_highlight_function_calls = 1
+" let g:go_highlight_extra_types = 1
+" let g:go_highlight_operators = 1
 
 let g:go_fmt_autosave = 1
 let g:go_fmt_command = "goimports"
 
 " let g:fzf_layout = { 'down': '40%' }
 
-let g:go_auto_type_info = 1
+" let g:go_auto_type_info = 1
 
 " without this vim conceals quotes
 let g:vim_json_conceal=0
@@ -318,10 +337,10 @@ augroup END
 " au filetype go nmap <Leader>ds <Plug>(go-def-split)
 " au filetype go nmap <Leader>dv <Plug>(go-def-vertical)
 
-" let g:go_doc_popup_window=0
+let g:go_doc_popup_window=0
 let g:go_doc_keywordprg_enabled = 0
 let g:go_def_mapping_enabled = 0
-let g:auto_save = 1
+" let g:auto_save = 1
 
 " close vim when nerdtree is last window
 autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
@@ -342,6 +361,7 @@ nnoremap <silent> <F11> :NERDTreeToggle<CR>
 nnoremap <leader>n :lua vim.lsp.diagnostic.goto_next()<cr>
 " TODO: nnoremap <leader>p :lua vim.lsp.diagnostic.goto_prev()<cr>
 nnoremap <leader>gi :GoImports<CR>
+nnoremap <leader>ga :GoAlternate<CR>
 
 noremap <Up> <Nop>
 noremap <Down> <Nop>
@@ -401,8 +421,13 @@ require'lspconfig'.gopls.setup{
 			staticcheck = true,
 		},
 	},
-
 }
+
+require('ufo').setup({
+    provider_selector = function(bufnr, filetype, buftype)
+        return {'treesitter', 'indent'}
+    end
+})
 
 require('dap-go').setup()
 require('dapui').setup({
@@ -458,6 +483,15 @@ vim.keymap.set("n", "<leader>rt", ":lua require'neotest'.run.run()<CR>")
 vim.keymap.set("n", "<leader>rf", ":lua require'neotest'.run.run(vim.fn.expand('%'))<CR>")
 
 
+vim.o.foldcolumn = '1'
+vim.o.foldlevel = 99
+vim.o.foldlevelstart = 99
+vim.o.foldenable = true
+
+vim.keymap.set('n', 'zR', require('ufo').openAllFolds)
+vim.keymap.set('n', 'zM', require('ufo').closeAllFolds)
+
+
 
 END
 
@@ -481,3 +515,4 @@ augroup vimrc-remember-cursor-position
     autocmd!
     autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
 augroup END
+

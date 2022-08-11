@@ -32,3 +32,5 @@ alias vim=nvim
 export TERMINAL=alacritty
 
 setxkbmap -option caps:escape
+
+export BROWSER=/usr/bin/brave-browser
