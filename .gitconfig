@@ -6,11 +6,18 @@
 	co = checkout
 	ci = commit
 	st = status
+	rim = rebase -i master
+    pom = pull origin master
 	poh = push origin HEAD
 	pohf = push origin HEAD -f
-	br = !git for-each-ref --sort=committerdate refs/heads/ --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(color:red)%(objectname:short)%(color:reset) - %(contents:subject) - %(authorname) (%(color:green)%(committerdate:relative)%(color:reset))' --color=always | tail
+    br = !git for-each-ref --sort=committerdate refs/heads/ --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(color:red)%(objectname:short)%(color:reset) - %(contents:subject) - %(authorname) (%(color:green)%(committerdate:relative)%(color:reset))' --color=always | tail
+    br2 = !git checkout $(git for-each-ref --sort=committerdate refs/heads/ --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(color:red)%(objectname:short)%(color:reset) - %(contents:subject) - %(authorname) (%(color:green)%(committerdate:relative)%(color:reset))' --color=always | tail | fzf --ansi | awk '{print $1}')
+    todo = "!git diff master...HEAD | grep + | grep TODO"
+	epuf = !git add -u && !git ci --amend --no-edit && !git push origin HEAD -f
 
 [diff]
     tool = nvim -d
 [core]
 	editor = nvim
+[url "git@gitlab.com:"]
+	insteadOf = https://gitlab.com
